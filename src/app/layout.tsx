@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-page-custom-font */
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -28,7 +29,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-      <link href="https://fonts.googleapis.com/css?family=Waiting+for+the+Sunrise" rel="stylesheet" type="text/css"/>
+      <link href="https://fonts.googleapis.com/css?family=Waiting+for+the+Sunrise&display=optional" rel="stylesheet" type="text/css"/>
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}

@@ -35,7 +35,8 @@ const SignupForm = () => {
             } else {
               setServerMessage(data.error || "Registration failed.");
             }
-          } catch (error) {
+          } catch (e) {
+            console.log(e)
             setServerMessage("Something went wrong. Please try again.");
           }
 
