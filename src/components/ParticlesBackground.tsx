@@ -2,11 +2,20 @@
 
 import { useEffect } from "react";
 
+// Declaring types for particlesJS to avoid 'any' usage
+declare global {
+  interface Window {
+    particlesJS: {
+      load: (elementId: string, configPath: string, callback: () => void) => void;
+    };
+  }
+}
+
 const ParticlesBackground = () => {
   useEffect(() => {
-    import("particles.js").then((module) => {
-      if (typeof window !== "undefined") {
-        (window as any).particlesJS.load("particles-js", "/particles.json", function () {
+    import("particles.js").then(() => {
+      if (typeof window !== "undefined" && window.particlesJS) {
+        window.particlesJS.load("particles-js", "/particles.json", () => {
           console.log("callback - particles-js config loaded");
         });
       }

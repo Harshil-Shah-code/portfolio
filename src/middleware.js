@@ -1,6 +1,6 @@
 // import { NextResponse } from 'next/server';
 
-export function middleware(req) {
+export function middleware() { // req parameter present
     // console.log("Middleware is running..."); // Debugging log
 
     // const token = req.cookies.get('authToken'); // Get token from cookies
