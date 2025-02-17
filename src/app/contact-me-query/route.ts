@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import pool from "@/utils/db";
 import nodemailer from "nodemailer";
+import { ResultSetHeader } from "mysql2";
 
 export async function POST(req) {
   try {
@@ -17,7 +18,7 @@ export async function POST(req) {
     const [result] = await pool.execute(
       "INSERT INTO contact_query (name, email, message) VALUES (?, ?, ?)",
       [name, email, message]
-    );
+    ) as [ResultSetHeader, unknown];
 
     // Send email
     const transporter = nodemailer.createTransport({

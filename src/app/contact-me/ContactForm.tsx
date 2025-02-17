@@ -1,25 +1,38 @@
-import React, { useState } from "react";
+import React, { useState, ChangeEvent, FormEvent } from "react";
 import { motion } from "framer-motion";
 
-const ContactForm = () => {
-  const [formData, setFormData] = useState({ name: "", email: "", message: "" });
-  const [errors, setErrors] = useState({ name: "", email: "", message: "" });
-  const [loading, setLoading] = useState(false); // <-- Added loading state
+// Define types for our form data and errors
+interface FormData {
+  name: string;
+  email: string;
+  message: string;
+}
 
-  const handleChange = (e) => {
+interface FormErrors {
+  name?: string;
+  email?: string;
+  message?: string;
+}
+
+const ContactForm = () => {
+  const [formData, setFormData] = useState<FormData>({ name: "", email: "", message: "" });
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    setErrors({ ...errors, [e.target.name]: "" }); // Clear error on input change
+    setErrors({ ...errors, [e.target.name]: undefined }); // Clear error on input change
   };
 
-  const validateEmail = (email) => {
+  const validateEmail = (email: string): boolean => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(email);
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    let newErrors = {};
+    const newErrors: FormErrors = {};
     if (!formData.name.trim()) newErrors.name = "Name is required!";
     if (!formData.email.trim()) {
       newErrors.email = "Email is required!";
@@ -33,7 +46,7 @@ const ContactForm = () => {
       return;
     }
 
-    setLoading(true); // <-- Set loading to true before API call
+    setLoading(true);
 
     try {
       const response = await fetch("/contact-me-query", {
@@ -56,7 +69,7 @@ const ContactForm = () => {
       alert("Failed to send message. Please try again later.");
       console.error("Error submitting contact form:", error);
     } finally {
-      setLoading(false); // <-- Reset loading after API call completes
+      setLoading(false);
     }
   };
 
@@ -76,7 +89,7 @@ const ContactForm = () => {
           className="w-full p-3 border rounded-md text-black"
           value={formData.name}
           onChange={handleChange}
-          disabled={loading} // <-- Disable input while loading
+          disabled={loading}
         />
         {errors.name && (
           <motion.p
@@ -97,7 +110,7 @@ const ContactForm = () => {
           className="w-full p-3 border rounded-md text-black"
           value={formData.email}
           onChange={handleChange}
-          disabled={loading} // <-- Disable input while loading
+          disabled={loading}
         />
         {errors.email && (
           <motion.p
@@ -117,7 +130,7 @@ const ContactForm = () => {
           className="w-full p-3 border rounded-md text-black h-28"
           value={formData.message}
           onChange={handleChange}
-          disabled={loading} // <-- Disable input while loading
+          disabled={loading}
         />
         {errors.message && (
           <motion.p
@@ -133,7 +146,7 @@ const ContactForm = () => {
       <button
         type="submit"
         className="w-full bg-[#ffae09] text-white font-bold py-2 px-4 rounded hover:bg-[#e39800] disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center"
-        disabled={loading} // <-- Disable button while loading
+        disabled={loading}
       >
         {loading ? (
           <span className="animate-spin border-4 border-white border-t-transparent rounded-full w-5 h-5"></span>
