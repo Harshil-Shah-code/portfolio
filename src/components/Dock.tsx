@@ -10,8 +10,8 @@ import {
   AnimatePresence,
 } from "framer-motion";
 import React, {
-  Children,
-  cloneElement,
+  createContext,
+  useContext,
   useEffect,
   useMemo,
   useRef,
@@ -19,6 +19,13 @@ import React, {
 } from "react";
 
 import "@/styles/Dock.css";
+
+// Create context for dock item hover state
+const DockItemContext = createContext<{
+  isHovered: MotionValue<number> | null;
+}>({
+  isHovered: null,
+});
 
 export type DockItemData = {
   icon: React.ReactNode;
@@ -78,26 +85,26 @@ function DockItem({
   const size = useSpring(targetSize, spring);
 
   return (
-    <motion.div
-      ref={ref}
-      style={{
-        width: size,
-        height: size,
-      }}
-      onHoverStart={() => isHovered.set(1)}
-      onHoverEnd={() => isHovered.set(0)}
-      onFocus={() => isHovered.set(1)}
-      onBlur={() => isHovered.set(0)}
-      onClick={onClick}
-      className={`dock-item ${className}`}
-      tabIndex={0}
-      role="button"
-      aria-haspopup="true"
-    >
-      {Children.map(children, (child) =>
-        cloneElement(child as React.ReactElement, { isHovered })
-      )}
-    </motion.div>
+    <DockItemContext.Provider value={{ isHovered }}>
+      <motion.div
+        ref={ref}
+        style={{
+          width: size,
+          height: size,
+        }}
+        onHoverStart={() => isHovered.set(1)}
+        onHoverEnd={() => isHovered.set(0)}
+        onFocus={() => isHovered.set(1)}
+        onBlur={() => isHovered.set(0)}
+        onClick={onClick}
+        className={`dock-item ${className}`}
+        tabIndex={0}
+        role="button"
+        aria-haspopup="true"
+      >
+        {children}
+      </motion.div>
+    </DockItemContext.Provider>
   );
 }
 
@@ -106,11 +113,13 @@ type DockLabelProps = {
   children: React.ReactNode;
 };
 
-function DockLabel({ children, className = "", ...rest }: DockLabelProps) {
-  const { isHovered } = rest as { isHovered: MotionValue<number> };
+function DockLabel({ children, className = "" }: DockLabelProps) {
+  const { isHovered } = useContext(DockItemContext);
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
+    if (!isHovered) return;
+    
     const unsubscribe = isHovered.on("change", (latest) => {
       setIsVisible(latest === 1);
     });
