@@ -4,7 +4,8 @@ import pool from "@/utils/db"; // Database connection
 export async function GET() {
   try {
     // Fetch projects from the database
-    const [rows] = await pool.query("SELECT * FROM projects");
+    const result = await pool.query("SELECT * FROM projects");
+    const rows = result.rows;
 
     return NextResponse.json({ success: true, data: rows });
   } catch (error) {
